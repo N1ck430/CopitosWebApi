@@ -1,0 +1,25 @@
+✔-Customer-Model mit allen Properties
+✔-CustomerResponse-Model → Erweitertes Customer-Model mit ID
+-CustomerService:
+	✔Nimmt daten entgegen und speichert sie in einem Dictionary<Guid, Customer> → Prüfung der Daten per ValidationService
+	✔Gibt Liste von Daten in Struktur von CustomerResponse zurück
+	(optional) Löschen eines Eintrags per ID
+	(optional) Bearbeiten eines Eintrags per ID (vorerst volles update)
+-ValidationService:
+	Validiert Kunden anhand der Kriterien und wirft eine InvalidValidationException wenn Kunde nicht validiert werden kann
+-Controller:
+	Endpunkte: 
+		✔[POST]Customer → Nimmt einen einzelnen Kunden entgegen und überreicht ihn an den Service 200er wenn erfolgreich hinzugefügt, 400er wenn Fehler
+		✔[GET]Customer → Gibt die Liste aller Kunden zurück
+		(optional)[DELETE]Customer/{id} → Löscht Kunden 200er wenn erfolgreich, 404er wenn Kunde nicht in liste, 400er wenn Fehler
+		(optional)[PUT]Customer/{id} → Volles update des Kunden 200er wenn erfolgreich, 404er wenn Kunde nicht in liste, 400er wenn Fehler
+
+-Unit-Tests
+	✔ValidationService
+	Weitere Services und Controller
+
+-TODOs:
+	Refactor CustomerResponse damit nicht alle Properties von basis-Klasse einzeln gesetzt werden müssen
+	Refactor ErrorResponse zur gleichen Struktur, wie ValidationErrors
+	Datenhaltung in eingenen Service auslagern → CustomerSerice dann Scoped
+	evtl. FluentAssertions zum Validieren der AddCustomer-Anfrage

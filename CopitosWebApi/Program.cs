@@ -1,3 +1,6 @@
+using CopitosWebApi.Services.CustomerService;
+using CopitosWebApi.Services.DateProvider;
+using CopitosWebApi.Services.Validation;
 
 namespace CopitosWebApi
 {
@@ -13,6 +16,10 @@ namespace CopitosWebApi
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddSingleton<ICustomerService, CustomerService>();
+            builder.Services.AddSingleton<IValidationService, ValidationService>();
+            builder.Services.AddSingleton<IDateProvider, DateProvider>();
 
             var app = builder.Build();
 
