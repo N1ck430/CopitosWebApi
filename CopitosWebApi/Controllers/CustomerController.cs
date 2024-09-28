@@ -20,7 +20,7 @@ namespace CopitosWebApi.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(HttpValidationProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IResult> AddCustomer(AddCustomerRequest request)
         {
