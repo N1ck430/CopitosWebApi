@@ -1,46 +1,49 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
-using CopitosWebApi.Models;
+﻿using CopitosWebApi.Models.Data;
 using CopitosWebApi.Services.DateProvider;
+using Microsoft.AspNetCore.Http.HttpResults;
+using System.Text.RegularExpressions;
 
 namespace CopitosWebApi.Services.Validation
 {
-    public class ValidationService : IValidationService
+    public partial class ValidationService : IValidationService
     {
+        [GeneratedRegex("^[0-9]{5}$")]
+        private static partial Regex PlzRegex();
+
+
         private readonly IDateProvider _dateProvider;
-        private readonly Regex _plzRegex = new("^[0-9]{5}$");
+        private readonly Regex _plzRegex = PlzRegex();
 
         public ValidationService(IDateProvider dateProvider)
         {
             _dateProvider = dateProvider;
         }
 
-        /// <summary>
-        /// Validated a customer and throws and ValidationException when validaiton was not successfull
-        /// </summary>
-        /// <param name="customer"></param>
-        /// <exception cref="ValidationException"></exception>
-        public void ValidateCustomer(Customer customer)
+        public ValidationProblem? ValidateCustomer(Customer customer)
         {
+            var errorDictionary = new Dictionary<string, string[]>();
+
             if (customer.Geburtsdatum >= _dateProvider.UtcNow)
             {
-                throw new ValidationException("Geburtsdatum muss in der Vergangenheit liegen.");
+                errorDictionary.Add(nameof(customer.Geburtsdatum), ["Geburtsdatum muss in der Vergangenheit liegen."]);
             }
 
             if (!_plzRegex.IsMatch(customer.Plz))
             {
-                throw new ValidationException("Plz nicht valide. Sie muss auf 5 numerischen Zeichen bestehen.");
+                errorDictionary.Add(nameof(customer.Plz), ["Plz nicht valide. Sie muss auf 5 numerischen Zeichen bestehen."]);
             }
 
-            if (string.IsNullOrEmpty(customer.Land))
+            if (!string.IsNullOrEmpty(customer.Land) && customer.Land.Length != 2)
             {
-                return;
+                errorDictionary.Add(nameof(customer.Land), ["Wenn gefüllt, darf das Land nur aus 2 Zeichen bestehen."]);
             }
 
-            if (customer.Land.Length != 2)
+            if (errorDictionary.Any())
             {
-                throw new ValidationException("Das Land darf nur aus 2 Zeichen bestehen.");
+                return TypedResults.ValidationProblem(errorDictionary);
             }
+
+            return null;
         }
     }
 }

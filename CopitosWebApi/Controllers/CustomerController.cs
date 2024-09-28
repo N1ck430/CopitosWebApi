@@ -1,7 +1,7 @@
-using CopitosWebApi.Models;
+using CopitosWebApi.Models.Data;
+using CopitosWebApi.Models.Requests;
 using CopitosWebApi.Services.CustomerService;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 
 namespace CopitosWebApi.Controllers
@@ -21,34 +21,32 @@ namespace CopitosWebApi.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        public IActionResult AddCustomer(Customer customer)
+        [ProducesResponseType(typeof(HttpValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IResult> AddCustomer(AddCustomerRequest request)
         {
             try
             {
-                _customerService.AddCustomer(customer);
-                return Ok();
+                var result = await _customerService.AddCustomer(request);
+                return result;
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"AddCustomer | Could not add Customer {JsonSerializer.Serialize(customer)}");
-                if (e is ValidationException ve)
-                {
-                    return BadRequest(ve.Message);
-                }
-                return BadRequest("An error occurred");
+                _logger.LogError(e, "AddCustomer | Could not add Customer {customerRequest}",
+                    JsonSerializer.Serialize(request));
+   
+                return TypedResults.BadRequest();
             }
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<CustomerResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<Customer>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
 
-        public IActionResult GetCustomers()
+        public async Task<IActionResult> GetCustomers()
         {
             try
             {
-                return Ok(_customerService.GetCustomers());
+                return Ok(await _customerService.GetCustomers());
             }
             catch (Exception e)
             {

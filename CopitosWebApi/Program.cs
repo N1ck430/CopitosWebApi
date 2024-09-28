@@ -1,6 +1,9 @@
+using CopitosWebApi.Models.DbContext;
+using CopitosWebApi.Services.CustomerDataService;
 using CopitosWebApi.Services.CustomerService;
 using CopitosWebApi.Services.DateProvider;
 using CopitosWebApi.Services.Validation;
+using Microsoft.EntityFrameworkCore;
 
 namespace CopitosWebApi
 {
@@ -17,7 +20,10 @@ namespace CopitosWebApi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddSingleton<ICustomerService, CustomerService>();
+            builder.Services.AddDbContext<CustomerDbContext>(options => options.UseInMemoryDatabase("MemoryDb"));
+
+            builder.Services.AddScoped<ICustomerDataService, CustomerDataService>();
+            builder.Services.AddScoped<ICustomerService, CustomerService>();
             builder.Services.AddSingleton<IValidationService, ValidationService>();
             builder.Services.AddSingleton<IDateProvider, DateProvider>();
 

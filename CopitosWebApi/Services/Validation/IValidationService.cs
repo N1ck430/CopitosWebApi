@@ -1,14 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using CopitosWebApi.Models;
+﻿using CopitosWebApi.Models.Data;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace CopitosWebApi.Services.Validation;
 
 public interface IValidationService
 {
-    /// <summary>
-    /// Validated a customer and throws and ValidationException when validaiton was not successfull
-    /// </summary>
-    /// <param name="customer"></param>
-    /// <exception cref="ValidationException"></exception>
-    public void ValidateCustomer(Customer customer);
+    public ValidationProblem? ValidateCustomer(Customer customer);
 }

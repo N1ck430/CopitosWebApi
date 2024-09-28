@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using CopitosWebApi.Models;
+﻿using CopitosWebApi.Models.Data;
 
 namespace UnitsTests.ServiceTests.ValidationService;
 
@@ -20,7 +19,7 @@ public class ValidateCustomerTest : ValidationServiceTest
     [Test]
     public void SuccessTest()
     {
-        ValidationService.ValidateCustomer(new Customer
+        var result = ValidationService.ValidateCustomer(new Customer
         {
             Geburtsdatum = _validGeburtsdatum,
             Plz = "12345",
@@ -28,49 +27,73 @@ public class ValidateCustomerTest : ValidationServiceTest
             Vorname = "Vorname"
         });
 
-        Assert.Pass();
+        Assert.That(result, Is.Null);
     }
 
     [Test]
     public void GeburtsdatumInFutureTest()
     {
-        var exception = Assert.Throws<ValidationException>(() => ValidationService.ValidateCustomer(new Customer
+        var result = ValidationService.ValidateCustomer(new Customer
         {
             Geburtsdatum = _invalidGeburtsdatum,
             Plz = "12345",
             Nachname = "Nachname",
             Vorname = "Vorname"
-        }));
+        });
 
-        Assert.That(exception.Message, Is.EqualTo("Geburtsdatum muss in der Vergangenheit liegen."));
+        Assert.That(result, Is.Not.Null);
+
+        var error = result.ProblemDetails.Errors.First();
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(error.Key, Is.EqualTo(nameof(Customer.Geburtsdatum)));
+            Assert.That(error.Value[0], Is.EqualTo("Geburtsdatum muss in der Vergangenheit liegen."));
+        });
     }
 
     [Test]
     public void PlzInvalid()
     {
-        var exception = Assert.Throws<ValidationException>(() => ValidationService.ValidateCustomer(new Customer
+        var result = ValidationService.ValidateCustomer(new Customer
         {
             Geburtsdatum = _validGeburtsdatum,
             Plz = "12345a",
             Nachname = "Nachname",
             Vorname = "Vorname"
-        }));
+        });
 
-        Assert.That(exception.Message, Is.EqualTo("Plz nicht valide. Sie muss auf 5 numerischen Zeichen bestehen."));
+        Assert.That(result, Is.Not.Null);
+
+        var error = result.ProblemDetails.Errors.First();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(error.Key, Is.EqualTo(nameof(Customer.Plz)));
+            Assert.That(error.Value[0], Is.EqualTo("Plz nicht valide. Sie muss auf 5 numerischen Zeichen bestehen."));
+        });
     }
 
     [Test]
     public void LandInvalid()
     {
-        var exception = Assert.Throws<ValidationException>(() => ValidationService.ValidateCustomer(new Customer
+        var result = ValidationService.ValidateCustomer(new Customer
         {
             Geburtsdatum = _validGeburtsdatum,
             Plz = "12345",
             Nachname = "Nachname",
             Vorname = "Vorname",
             Land = "123"
-        }));
+        });
 
-        Assert.That(exception.Message, Is.EqualTo("Das Land darf nur aus 2 Zeichen bestehen."));
+        Assert.That(result, Is.Not.Null);
+
+        var error = result.ProblemDetails.Errors.First();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(error.Key, Is.EqualTo(nameof(Customer.Land)));
+            Assert.That(error.Value[0], Is.EqualTo("Wenn gefüllt, darf das Land nur aus 2 Zeichen bestehen."));
+        });
     }
 }

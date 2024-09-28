@@ -1,27 +1,38 @@
-﻿using CopitosWebApi.Models;
+﻿using CopitosWebApi.Models.Data;
+using CopitosWebApi.Models.Requests;
+using CopitosWebApi.Services.CustomerDataService;
 using CopitosWebApi.Services.Validation;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace CopitosWebApi.Services.CustomerService;
 
 public class CustomerService : ICustomerService
 {
-    private readonly Dictionary<Guid, Customer> _customers = new();
     private readonly IValidationService _validationService;
+    private readonly ICustomerDataService _customerDataService;
 
-    public CustomerService(IValidationService validationService)
+    public CustomerService(IValidationService validationService, ICustomerDataService customerDataService)
     {
         _validationService = validationService;
+        _customerDataService = customerDataService;
     }
 
-    public void AddCustomer(Customer customer)
+    public async Task<Results<Ok<bool>, ValidationProblem>> AddCustomer(AddCustomerRequest request)
     {
-        _validationService.ValidateCustomer(customer);
+        var customer = request.ToCustomer();
+        var validationResult = _validationService.ValidateCustomer(customer);
+        if (validationResult is not null)
+        {
+            return validationResult;
+        }
 
-        _customers.Add(Guid.NewGuid(), customer);
+
+        var result = await _customerDataService.AddCustomer(customer);
+        return TypedResults.Ok(result);
     }
 
-    public IEnumerable<CustomerResponse> GetCustomers()
+    public async Task<IEnumerable<Customer>> GetCustomers()
     {
-        return _customers.Select(kvp => new CustomerResponse(kvp.Key, kvp.Value));
+        return await _customerDataService.AllCustomers();
     }
 }
