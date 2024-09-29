@@ -21,4 +21,4 @@
 	✔Refactor ErrorResponse zur gleichen Struktur, wie ValidationErrors
 	✔Datenhaltung in eingenen Service auslagern → CustomerSerice dann Scoped
 	evtl. FluentAssertions zum Validieren der AddCustomer-Anfrage
-	Auslagern der Texte in Resource
+	✔Auslagern der Texte in Resource

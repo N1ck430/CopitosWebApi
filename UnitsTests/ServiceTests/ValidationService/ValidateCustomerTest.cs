@@ -1,4 +1,5 @@
 ﻿using CopitosWebApi.Models.Data;
+using CopitosWebApi.Resources;
 
 namespace UnitsTests.ServiceTests.ValidationService;
 
@@ -48,7 +49,7 @@ public class ValidateCustomerTest : ValidationServiceTest
         Assert.Multiple(() =>
         {
             Assert.That(error.Key, Is.EqualTo(nameof(Customer.Geburtsdatum)));
-            Assert.That(error.Value[0], Is.EqualTo("Geburtsdatum muss in der Vergangenheit liegen."));
+            Assert.That(error.Value[0], Is.EqualTo(Texts.GeburtsdatumValidationError));
         });
     }
 
@@ -70,7 +71,7 @@ public class ValidateCustomerTest : ValidationServiceTest
         Assert.Multiple(() =>
         {
             Assert.That(error.Key, Is.EqualTo(nameof(Customer.Plz)));
-            Assert.That(error.Value[0], Is.EqualTo("Plz nicht valide. Sie muss auf 5 numerischen Zeichen bestehen."));
+            Assert.That(error.Value[0], Is.EqualTo(Texts.PlzValidationError));
         });
     }
 
@@ -93,7 +94,7 @@ public class ValidateCustomerTest : ValidationServiceTest
         Assert.Multiple(() =>
         {
             Assert.That(error.Key, Is.EqualTo(nameof(Customer.Land)));
-            Assert.That(error.Value[0], Is.EqualTo("Wenn gefüllt, darf das Land nur aus 2 Zeichen bestehen."));
+            Assert.That(error.Value[0], Is.EqualTo(Texts.LandValidationError));
         });
     }
 }

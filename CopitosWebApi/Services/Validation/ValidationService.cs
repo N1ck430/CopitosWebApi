@@ -2,6 +2,7 @@
 using CopitosWebApi.Services.DateProvider;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Text.RegularExpressions;
+using CopitosWebApi.Resources;
 
 namespace CopitosWebApi.Services.Validation
 {
@@ -25,17 +26,17 @@ namespace CopitosWebApi.Services.Validation
 
             if (customer.Geburtsdatum >= _dateProvider.UtcNow)
             {
-                errorDictionary.Add(nameof(customer.Geburtsdatum), ["Geburtsdatum muss in der Vergangenheit liegen."]);
+                errorDictionary.Add(nameof(customer.Geburtsdatum), [Texts.GeburtsdatumValidationError]);
             }
 
             if (!_plzRegex.IsMatch(customer.Plz))
             {
-                errorDictionary.Add(nameof(customer.Plz), ["Plz nicht valide. Sie muss auf 5 numerischen Zeichen bestehen."]);
+                errorDictionary.Add(nameof(customer.Plz), [Texts.PlzValidationError]);
             }
 
             if (!string.IsNullOrEmpty(customer.Land) && customer.Land.Length != 2)
             {
-                errorDictionary.Add(nameof(customer.Land), ["Wenn gefüllt, darf das Land nur aus 2 Zeichen bestehen."]);
+                errorDictionary.Add(nameof(customer.Land), [Texts.LandValidationError]);
             }
 
             if (errorDictionary.Any())
