@@ -21,6 +21,25 @@ public class CustomerDataService : ICustomerDataService
 
     public async Task<IEnumerable<Customer>> AllCustomers()
     {
-        return await _dbContext.Customers.ToListAsync();
+        return await _dbContext.Customers.AsNoTracking().ToListAsync();
+    }
+
+    public async Task<Customer?> GetCustomer(Guid id)
+    {
+        return await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id);
+    }
+
+    public async Task<bool> UpdateCustomer(Customer customer)
+    {
+        _dbContext.Customers.Update(customer);
+
+        return await _dbContext.SaveChangesAsync() > 0;
+    }
+
+    public async Task<bool> DeleteCustomer(Customer customer)
+    {
+        _dbContext.Customers.Remove(customer);
+
+        return await _dbContext.SaveChangesAsync() > 0;
     }
 }

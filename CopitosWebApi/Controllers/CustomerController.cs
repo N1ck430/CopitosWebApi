@@ -54,5 +54,42 @@ namespace CopitosWebApi.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpPut]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(HttpValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        public async Task<IResult> UpdateCustomer(Customer request)
+        {
+            try
+            {
+                var result = await _customerService.UpdateCustomer(request);
+                return result;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "UpdateCustomer | Could not update Customer {customer}",
+                    JsonSerializer.Serialize(request));
+                return TypedResults.BadRequest();
+            }
+        }
+
+        [HttpDelete("{id:guid}")]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        public async Task<IResult> DeleteCustomer(Guid id)
+        {
+            try
+            {
+                var result = await _customerService.DeleteCustomer(id);
+                return result;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "DeleteCustomer | Could not delete Customer {id}", id);
+                return TypedResults.BadRequest();
+            }
+        }
     }
 }

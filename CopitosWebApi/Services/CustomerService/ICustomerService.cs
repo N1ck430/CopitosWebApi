@@ -8,4 +8,6 @@ public interface ICustomerService
 {
     public Task<Results<Ok<bool>, ValidationProblem>> AddCustomer(AddCustomerRequest request);
     public Task<IEnumerable<Customer>> GetCustomers();
+    public Task<Results<Ok<bool>, ValidationProblem, NotFound>> UpdateCustomer(Customer customer);
+    public Task<Results<Ok<bool>, NotFound>> DeleteCustomer(Guid id);
 }

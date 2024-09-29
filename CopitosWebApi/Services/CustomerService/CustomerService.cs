@@ -35,4 +35,37 @@ public class CustomerService : ICustomerService
     {
         return await _customerDataService.AllCustomers();
     }
+
+    public async Task<Results<Ok<bool>, ValidationProblem, NotFound>> UpdateCustomer(Customer customer)
+    {
+        var validationResult = _validationService.ValidateCustomer(customer);
+
+        if (validationResult is not null)
+        {
+            return validationResult;
+        }
+
+        var customerFromDb = await _customerDataService.GetCustomer(customer.Id);
+
+        if (customerFromDb is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        var result = await _customerDataService.UpdateCustomer(customer);
+        return TypedResults.Ok(result);
+    }
+
+    public async Task<Results<Ok<bool>, NotFound>> DeleteCustomer(Guid id)
+    {
+        var customerFromDb = await _customerDataService.GetCustomer(id);
+
+        if (customerFromDb is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        var result = await _customerDataService.DeleteCustomer(customerFromDb);
+        return TypedResults.Ok(result);
+    }
 }
