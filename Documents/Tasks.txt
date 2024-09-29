@@ -15,7 +15,7 @@
 
 -Unit-Tests
 	✔ValidationService
-	Weitere Services und Controller
+	✔Weitere Services und Controller
 
 -TODOs:
 	✔Refactor ErrorResponse zur gleichen Struktur, wie ValidationErrors
